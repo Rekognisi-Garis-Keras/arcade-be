@@ -11,19 +11,19 @@ services:
     ports:
       - "5432:5432"
   
-  app:
-    build: .
-    restart: always
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    depends_on:
-      - db
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    command: npm run dev
+  # app:
+  #   build: .
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   command: npm run dev
 
 volumes:
   pg_data:

@@ -31,9 +31,28 @@ model Subject {
   id            Int      @id @default(autoincrement())
   name          String
   desc          String   @db.Text
-  slug          String
+  slug          String   @unique
   thumbnail_url String
   created_at    DateTime @default(now())
 
+  topics Topic[]
+
   @@map("subjects")
+}
+
+// === Topic Model
+model Topic {
+  id              Int @id @default(autoincrement())
+  subject_id      Int
+  title           String
+  slug            String @unique
+  desc            String @db.Text
+  model_url       String
+  marker_img_url  String
+  audio_url       String
+  created_at      DateTime @default(now())
+
+  subject         Subject @relation(references: [id], fields: [subject_id])
+
+  @@map("topics")
 }
