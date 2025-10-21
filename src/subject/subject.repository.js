@@ -17,11 +17,11 @@ export class SubjectRepository {
     return await prisma.subject.findFirst({ where: { slug } });
   }
 
-  async update(id, data) {
-    return await prisma.subject.update({ where: { id }, data });
+  async update(slug, data) {
+    return await prisma.subject.update({ where: { slug }, data });
   }
 
-  async delete(id) {
-    return await prisma.subject.delete({ where: { id } });
+  async delete(slug) {
+    return await prisma.subject.delete({ where: { slug } });
   }
 }

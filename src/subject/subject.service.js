@@ -25,20 +25,23 @@ export class SubjectService {
 
   async getSubjectBySlug(slug) {
     const subject = await this.subjectRepo.findBySlug(slug);
+    if (!subject) {
+      return null;
+    }
     return new SubjectResponseDto(subject);
   }
 
-  async updateSubject(id, data) {
+  async updateSubject(slug, data) {
     let updatedSubject = { ...data };
     if (data.name) {
       updatedSubject.slug = generateSlug(data.name);
     }
-    const subject = await this.subjectRepo.update(id, updatedSubject);
+    const subject = await this.subjectRepo.update(slug, updatedSubject);
     return new SubjectResponseDto(subject);
   }
 
-  async deleteSubject(id) {
-    const subject = await this.subjectRepo.delete(id);
+  async deleteSubject(slug) {
+    const subject = await this.subjectRepo.delete(slug);
     return new SubjectResponseDto(subject);
   }
 }

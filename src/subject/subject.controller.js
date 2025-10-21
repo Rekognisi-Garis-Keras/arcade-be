@@ -51,8 +51,8 @@ export class SubjectController {
   update = async (req, res) => {
     try {
       // validate
-      const { id } = req.params;
-      const subject = await this.subjectService.getSubjectById(parseInt(id));
+      const { slug } = req.params;
+      const subject = await this.subjectService.getSubjectBySlug(slug);
       if (!subject) {
         return ResponseUtil.notFound(res, "Subject not found");
       }
@@ -62,8 +62,8 @@ export class SubjectController {
       }
       
       // update
-      const updatedSubject = await this.subjectService.updateSubject(parseInt(id), value);
-      return ResponseUtil.success(res, 200, "Subject updated successfully", subject);
+      const updatedSubject = await this.subjectService.updateSubject(slug, value);
+      return ResponseUtil.success(res, 200, "Subject updated successfully", updatedSubject);
     } catch (error) {
       console.error(error);
       return ResponseUtil.error(res, 500, "Failed to update subject", error.message);
@@ -73,14 +73,14 @@ export class SubjectController {
   delete = async (req, res) => {
     try {
       // validate
-      const { id } = req.params;
-      const subject = await this.subjectService.getSubjectById(parseInt(id));
+      const { slug } = req.params;
+      const subject = await this.subjectService.getSubjectBySlug(slug);
       if (!subject) {
         return ResponseUtil.notFound(res, "subject not found");
       }
 
       // delete
-      await this.subjectService.deleteSubject(parseInt(id));
+      await this.subjectService.deleteSubject(slug);
       return ResponseUtil.success(res, 200, "Subject deleted successfully", subject);
     } catch (error) {
       console.error(error);

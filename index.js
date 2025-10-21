@@ -36,8 +36,8 @@ app.get('/auth/user', authMiddleware, userController.me);
 app.post('/subjects', subjectController.create);
 app.get('/subjects', subjectController.getAll);
 app.get('/subjects/:slug', subjectController.getBySlug);
-app.put('/subjects/:id', subjectController.update);
-app.delete('/subjects/:id', subjectController.delete);
+app.put('/subjects/:slug', subjectController.update);
+app.delete('/subjects/:slug', subjectController.delete);
 
 app.post('/subjects/:subSlug/topics', topicController.create);
 app.get('/subjects/:subSlug/topics', topicController.getBySubjectSlug);
