@@ -36,8 +36,30 @@ export class UserService {
     return { user: userDto, token };
   }
 
+  async loginWithGoogle(user) {
+    if (!user || !user.id) {
+      throw new Error("Invalid user object provided for Google login.");
+    }
+    const token = JwtUtil.sign({ 
+      id: user.id,
+      name: user.name, 
+      email: user.email, 
+      role: user.role, 
+    });
+    const userDto = new UserResponseDto(user);
+    return { user: userDto, token }; 
+  }
+
   async getUserById(id) {
     const user = await this.userRepo.findById(id);
+    if (!user) {
+      return null;
+    }
+    return new UserResponseDto(user);
+  }
+
+  async getUserByEmail(email) {
+    const user = await this.userRepo.findByEmail(email);
     if (!user) {
       return null;
     }

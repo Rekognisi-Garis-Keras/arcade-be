@@ -13,12 +13,25 @@ import { TopicController } from "./src/topic/topic.controller.js";
 import { QuizRepository } from "./src/quiz/quiz.repository.js";
 import { QuizService } from "./src/quiz/quiz.service.js";
 import { QuizController } from "./src/quiz/quiz.controller.js";
+import session from "express-session";
+import passport from "passport";
+import "./src/config/passport-google.js";
 
 dotenv.config();
 
 const app = express();
 
-app.use(express.json())
+app.use(express.json());
+
+app.use(session({
+  secret: 'SECRET_BANGET',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 const userRepo = new UserRepository();
 const userService = new UserService(userRepo);
@@ -36,9 +49,24 @@ const quizRepo = new QuizRepository();
 const quizService = new QuizService(quizRepo, topicService);
 const quizController = new QuizController(quizService);
 
-app.post('/auth/login', userController.login);
-app.post('/auth/register', userController.register);
-app.get('/auth/user', authMiddleware, userController.me);
+app.post('/auth/login', userController.login); // by Email + Passowrd
+app.post('/auth/login-google', passport.authenticate("google"), userController.loginByGoogle); // by Google
+app.post('/auth/register', userController.register); // by Email + Password
+app.get('/auth/user', authMiddleware, userController.me); // get Auth User
+
+app.get('/google', 
+  passport.authenticate('google', { 
+    scope: ['profile', 'email']
+  })
+);
+
+app.get('/oauth2/redirect/google', 
+  passport.authenticate('google', { 
+    failureRedirect: '/login-failure',
+    session: true
+  }),
+  userController.loginByGoogle
+);
 
 app.post('/subjects', subjectController.create);
 app.get('/subjects', subjectController.getAll);

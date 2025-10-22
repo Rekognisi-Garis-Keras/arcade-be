@@ -38,6 +38,20 @@ export class UserController {
     }
   }
 
+  loginByGoogle = async (req, res) => {
+    try {
+      const user = req.user;
+      if (!user) {
+        return ResponseUtil.unauthorized(res, "Google authentication failed.");
+      }
+      const result = await this.userService.loginWithGoogle(user);
+      return ResponseUtil.success(res, 200, "berhasil login google jir", result);
+    } catch (error) {
+      console.error(error);
+      return ResponseUtil.error(res, 500, "Failed to login by google", error.message);
+    }
+  }
+
   me = async (req, res) => {
     try {
       if (!req.user || !req.user.id) {
