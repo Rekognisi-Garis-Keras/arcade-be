@@ -1,7 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { UserRepository } from "../user/user.repository.js";
-import { UserService } from "../user/user.service.js";
 import { UserResponseDto } from "../user/dto/user-response.dto.js";
 
 const userRepo = new UserRepository();

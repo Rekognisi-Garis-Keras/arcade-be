@@ -11,9 +11,6 @@ export class QuizRepository {
         topic: {
           slug: topSlug
         }
-      },
-      include: {
-        topic: true
       }
     });
   }

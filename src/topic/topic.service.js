@@ -13,8 +13,15 @@ export class TopicService {
     if (!subject) {
       return null;
     }
+
     // generate topic slug
     const slug = generateSlug(data.title);
+
+    // validate
+    const findSlug = await this.topicRepo.findByTopicSlug(slug);
+    if (findSlug) {
+      throw new Error("topic already exist");
+    }
 
     // create
     const newTopic = { ...data, slug, subject_id: subject.id };
@@ -35,7 +42,13 @@ export class TopicService {
   async updateTopic(slug, data) {
     let updatedData = { ...data };
     if (data.title) {
-      updatedData.slug = generateSlug(data.title);
+      const newSlug = generateSlug(data.title);
+      // validate
+      const findSlug = await this.topicRepo.findByTopicSlug(newSlug);
+      if (findSlug) {
+        throw new Error("topic already exist");
+      }
+      updatedData.slug = newSlug;
     }
     const topic = await this.topicRepo.update(slug, updatedData);
     return new TopicResponseDTO(topic);
