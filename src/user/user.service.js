@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { JwtUtil } from '../utils/jwt.js';
+import { JwtUtil } from '../utils/jwt.util.js';
 import { UserResponseDto } from './dto/user-response.dto.js';
 
 export class UserService {

@@ -53,6 +53,22 @@ model Topic {
   created_at      DateTime @default(now())
 
   subject         Subject @relation(references: [id], fields: [subject_id])
+  quizzes         Quiz[]
 
   @@map("topics")
+}
+
+// === Quiz Model
+model Quiz {
+  id              Int      @id @default(autoincrement()) // untuk query
+  uuid            String   @default(uuid()) @unique      // untuk display
+  topic_id        Int
+  question        String   @db.Text
+  options         Json
+  correct_answer  String
+  created_at      DateTime @default(now())
+
+  topic           Topic @relation(references: [id], fields: [topic_id])
+
+  @@map("quizzes")
 }

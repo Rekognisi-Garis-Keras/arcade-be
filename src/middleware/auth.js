@@ -1,5 +1,5 @@
 import { ResponseUtil } from "../utils/response.util.js";
-import { JwtUtil } from "../utils/jwt.js";
+import { JwtUtil } from "../utils/jwt.util.js";
 
 export const authMiddleware = async (req, res, next) => {
   try {

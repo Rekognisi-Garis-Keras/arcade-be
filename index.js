@@ -10,6 +10,9 @@ import { authMiddleware } from "./src/middleware/auth.js";
 import { TopicRepository } from "./src/topic/topic.repository.js";
 import { TopicService } from "./src/topic/topic.service.js";
 import { TopicController } from "./src/topic/topic.controller.js";
+import { QuizRepository } from "./src/quiz/quiz.repository.js";
+import { QuizService } from "./src/quiz/quiz.service.js";
+import { QuizController } from "./src/quiz/quiz.controller.js";
 
 dotenv.config();
 
@@ -29,6 +32,10 @@ const topicRepo = new TopicRepository();
 const topicService = new TopicService(topicRepo, subjectService);
 const topicController = new TopicController(topicService);
 
+const quizRepo = new QuizRepository();
+const quizService = new QuizService(quizRepo, topicService);
+const quizController = new QuizController(quizService);
+
 app.post('/auth/login', userController.login);
 app.post('/auth/register', userController.register);
 app.get('/auth/user', authMiddleware, userController.me);
@@ -44,6 +51,12 @@ app.get('/subjects/:subSlug/topics', topicController.getBySubjectSlug);
 app.get('/subjects/:subSlug/topics/:topSlug', topicController.getByTopicSlug);
 app.put('/subjects/:subSlug/topics/:topSlug', topicController.update);
 app.delete('/subjects/:subSlug/topics/:topSlug', topicController.delete);
+
+app.post('/subjects/:subSlug/topics/:topSlug/quizzes', quizController.create);
+app.get('/subjects/:subSlug/topics/:topSlug/quizzes', quizController.getByTopic);
+app.get('/subjects/:subSlug/topics/:topSlug/quizzes/:uuid', quizController.getByUuid);
+app.put('/subjects/:subSlug/topics/:topSlug/quizzes/:uuid', quizController.update);
+app.delete('/subjects/:subSlug/topics/:topSlug/quizzes/:uuid', quizController.delete);
 
 const PORT = process.env.PORT || 3000;
 
