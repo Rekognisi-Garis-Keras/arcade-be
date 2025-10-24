@@ -9,5 +9,9 @@ export class TopicResponseDTO {
     this.marker_img_url = topic.marker_img_url;
     this.audio_url = topic.audio_url;
     this.created_at = topic.created_at;
+
+    if (topic.quizzes) {
+      this.quizzes = topic.quizzes;
+    }
   }
 }

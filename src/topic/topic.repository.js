@@ -6,7 +6,10 @@ export class TopicRepository {
   }
 
   async findByTopicSlug(slug) {
-    return await prisma.topic.findFirst({ where: { slug } });
+    return await prisma.topic.findFirst({ 
+      where: { slug }, 
+      include: { quizzes: true } 
+    });
   }
 
   async findBySubjectSlug(slug) {

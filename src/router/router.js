@@ -5,6 +5,7 @@ import { quizController } from "../quiz/index.js";
 import { userController } from "../user/index.js";
 import passport from "passport";
 import { authMiddleware } from "../middleware/auth.js";
+import { quizResultController } from "../quiz-result/index.js";
 
 export const createRouter = () => {
   const router = express.Router();
@@ -58,6 +59,9 @@ export const createRouter = () => {
   // QUIZ ROUTES
   // =========================
   router
+    .post("/subjects/:subSlug/topics/:topSlug/quizzes/submit", authMiddleware, quizResultController.submit);
+    
+  router
     .route("/subjects/:subSlug/topics/:topSlug/quizzes")
     .post(quizController.create)
     .get(quizController.getByTopic);
@@ -69,4 +73,8 @@ export const createRouter = () => {
     .delete(quizController.delete);
 
   return router;
+
+  // =========================
+  // QUIZ RESULT ROUTES
+  // =========================
 };

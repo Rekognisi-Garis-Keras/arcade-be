@@ -16,8 +16,9 @@ model User {
   password   String?
   role       Role     @default(student)
   googleId   String?  @unique
-  
   created_at DateTime @default(now())
+
+  quiz_results  QuizResult[]
 
   @@map("users")
 }
@@ -56,6 +57,7 @@ model Topic {
 
   subject         Subject @relation(references: [id], fields: [subject_id])
   quizzes         Quiz[]
+  quiz_results    QuizResult[]
 
   @@map("topics")
 }
@@ -73,4 +75,32 @@ model Quiz {
   topic           Topic @relation(references: [id], fields: [topic_id])
 
   @@map("quizzes")
+}
+
+// === Quiz Result Model
+model QuizResult {
+  id Int @id @default(autoincrement())
+  uuid String @unique
+  topic_id Int
+  user_id Int
+  score Int
+  created_at DateTime @default(now())
+
+  topic Topic @relation(references: [id], fields: [topic_id])
+  user User @relation(references: [id], fields: [user_id])
+  quiz_answers QuizAnswer[]
+
+  @@map("quiz_results")
+}
+
+// === Quiz Answer Model
+model QuizAnswer {
+  id          Int @id @default(autoincrement())
+  result_id   Int
+  answer      String
+  is_correct  Boolean
+
+  quiz_result QuizResult @relation(references: [id], fields: [result_id])
+
+  @@map("quiz_answers")
 }
