@@ -1,9 +1,11 @@
+import { QuizAnswerResponseDTO } from "../quiz-answer/dto/quiz-answer-response.dto.js";
 import { QuizResultResponseDTO } from "./dto/quiz-result-response.dto.js";
 import { v7 as uuid } from "uuid";
 
 export class QuizResultService {
-  constructor(quizResultRepo, topicService) {
+  constructor(quizResultRepo, quizAnswerService, topicService) {
     this.quizResultRepo = quizResultRepo;
+    this.quizAnswerService = quizAnswerService;
     this.topicService = topicService;
   }
 
@@ -31,10 +33,9 @@ export class QuizResultService {
       if (isCorrect) correctCount++;
 
       resultDetails.push({
-        user_answer: userAnswer,
+        answer: userAnswer,
         is_correct: isCorrect,
-        correct_answer: isCorrect ? null : q.correct_answer,
-        quiz: q,
+        // correct_answer: isCorrect ? null : q.correct_answer,
       });
     }
     // score calculating
@@ -50,6 +51,19 @@ export class QuizResultService {
 
     // create
     const newResult = await this.quizResultRepo.create(quizResultData);
-    return new QuizResultResponseDTO(newResult);
+    const newAnswers = await this.quizAnswerService.createAnswers(newResult.id, resultDetails);
+
+    const details = quizzes.map((quiz, idx) => {
+      return {
+        ...quiz,
+        user_answer: resultDetails[idx].answer,
+        is_correct: resultDetails[idx].is_correct,
+      };
+    });
+
+    return {
+      result: new QuizResultResponseDTO(newResult),
+      details: details
+    };
   }
 }
