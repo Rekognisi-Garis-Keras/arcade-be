@@ -24,6 +24,10 @@ app.use("/", createRouter());
 
 const PORT = process.env.PORT || 3000;
 
+app.get("/", (req, res) => {
+  res.status(200).send({ message: "ARcade API" });
+});
+
 app.listen(PORT, () => {
   console.log(`Application running on localhost:${PORT}`);
 })
