@@ -3,10 +3,26 @@ import dotenv from "dotenv";
 import session from "express-session";
 import passport from "./src/config/passport-google.js";
 import { createRouter } from "./src/router/router.js";
+import Multer from "multer";
+import cors from "cors";
+import { v2 as cloudinary } from 'cloudinary';
 
 dotenv.config();
 
+const storage = new Multer.memoryStorage();
+const upload = Multer({
+  storage,
+});
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY || "732694742653797",
+  api_secret: process.env.CLOUDINARY_API_SECRET || "Cv4Mc53MmxKktXjb14iStA5qD7g",
+});
+
+// APP EXPRESS
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 
@@ -20,7 +36,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/", createRouter());
+app.use("/", createRouter(upload));
 
 const PORT = process.env.PORT || 3000;
 

@@ -7,7 +7,7 @@ import passport from "passport";
 import { authMiddleware } from "../middleware/auth.js";
 import { quizResultController } from "../quiz-result/index.js";
 
-export const createRouter = () => {
+export const createRouter = (upload) => {
   const router = express.Router();
 
   // =========================
@@ -32,13 +32,13 @@ export const createRouter = () => {
   // =========================
   router
     .route("/subjects")
-    .post(subjectController.create)
+    .post(upload.single("thumbnail"), subjectController.create)
     .get(subjectController.getAll);
 
   router
     .route("/subjects/:slug")
     .get(subjectController.getBySlug)
-    .put(subjectController.update)
+    .put(upload.single("thumbnail"), subjectController.update)
     .delete(subjectController.delete);
 
   // =========================

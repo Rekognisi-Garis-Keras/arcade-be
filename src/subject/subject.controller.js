@@ -1,6 +1,6 @@
+import { handleUpload } from "../config/cloudinary.js";
 import { ResponseUtil } from "../utils/response.util.js";
 import { subjectCreateSchema, subjectUpdateSchema } from "./dto/subject-request.dto.js";
-import { SubjectResponseDto } from "./dto/subject-response.dto.js";
 
 export class SubjectController {
   constructor(subjectService) {
@@ -9,14 +9,27 @@ export class SubjectController {
 
   create = async (req, res) => {
     try {
-      // validate
+      // validate body
       const { error, value } = subjectCreateSchema.validate(req.body);
       if (error) {
         return ResponseUtil.validationError(res, error.details[0].message, error.details);
       }
 
-      // create
-      const subject = await this.subjectService.createSubject(value);
+      // upload file to cloudinary
+      if (!req.file) {
+        return ResponseUtil.validationError(res, "Thumbnail file is required");
+      }
+
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+      const cldRes = await handleUpload(dataURI);
+
+      // create subject
+      const subjectData = {
+        ...value,
+        thumbnail_url: cldRes.secure_url,
+      };
+      const subject = await this.subjectService.createSubject(subjectData);
       return ResponseUtil.success(res, 201, "Subject created successfully", subject);
     } catch (error) {
       console.error(error);
@@ -60,9 +73,21 @@ export class SubjectController {
       if (error) {
         return ResponseUtil.validationError(res, error.details[0].message, error.details);
       }
-      
+
+      // handle optional thumbnail update
+      let thumbnail_url = subject.thumbnail_url;
+      if (req.file) {
+        const b64 = Buffer.from(req.file.buffer).toString("base64");
+        let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+        const cldRes = await handleUpload(dataURI);
+        thumbnail_url = cldRes.secure_url;
+      }
+
       // update
-      const updatedSubject = await this.subjectService.updateSubject(slug, value);
+      const updatedSubject = await this.subjectService.updateSubject(slug, {
+        ...value,
+        thumbnail_url,
+      });
       return ResponseUtil.success(res, 200, "Subject updated successfully", updatedSubject);
     } catch (error) {
       console.error(error);
