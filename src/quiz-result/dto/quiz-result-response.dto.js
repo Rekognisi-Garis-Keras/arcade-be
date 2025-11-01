@@ -16,7 +16,7 @@ export class QuizResultResponseDTO {
         desc: result.topic.desc,
         model_url: result.topic.model_url,
         marker_img_url: result.topic.marker_img_url,
-        audio_url: result.topic.audio_url,
+        content: result.topic.content,
         created_at: result.topic.created_at
       }
     }

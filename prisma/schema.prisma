@@ -52,7 +52,7 @@ model Topic {
   desc            String @db.Text
   model_url       String
   marker_img_url  String
-  audio_url       String
+  content         String @db.Text
   created_at      DateTime @default(now())
 
   subject         Subject @relation(references: [id], fields: [subject_id])

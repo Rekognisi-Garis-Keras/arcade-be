@@ -11,7 +11,7 @@ export class TopicService {
     // subject find
     const subject = await this.subjectService.getSubjectBySlug(subSlug);
     if (!subject) {
-      return null;
+      throw new Error("subject not found");
     }
 
     // generate topic slug
