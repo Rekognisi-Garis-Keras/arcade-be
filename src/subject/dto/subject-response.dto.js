@@ -5,5 +5,6 @@ export class SubjectResponseDto {
     this.slug = subject.slug;
     this.desc = subject.desc;
     this.thumbnail = subject.thumbnail_url;
+    this.topics = subject.topics;
   }
 }

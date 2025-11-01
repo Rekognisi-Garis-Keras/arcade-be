@@ -6,15 +6,15 @@ export class SubjectRepository {
   }
 
   async findAll() {
-    return await prisma.subject.findMany();
+    return await prisma.subject.findMany({ include: { topics: true } });
   }
 
   async findById(id) {
-    return await prisma.subject.findUnique({ where: { id } });
+    return await prisma.subject.findUnique({ where: { id }, include: { topics: true } });
   }
 
   async findBySlug(slug) {
-    return await prisma.subject.findFirst({ where: { slug } });
+    return await prisma.subject.findFirst({ where: { slug }, include: { topics: true } });
   }
 
   async update(slug, data) {

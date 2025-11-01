@@ -10,7 +10,7 @@ services:
       - pg_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-  
+
   app:
     build: .
     restart: always
@@ -23,7 +23,8 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    command: npm run dev
+    command: >
+      npx nodemon --legacy-watch src/index.js
 
 volumes:
   pg_data:
