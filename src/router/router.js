@@ -3,6 +3,7 @@ import { subjectController } from "../subject/index.js";
 import { topicController } from "../topic/index.js";
 import { quizController } from "../quiz/index.js";
 import { userController } from "../user/index.js";
+import { aiController } from "../ai/index.js";
 import passport from "passport";
 import { authMiddleware } from "../middleware/auth.js";
 import { quizResultController } from "../quiz-result/index.js";
@@ -15,9 +16,9 @@ export const createRouter = (upload) => {
   // =========================
   router.post('/auth/login', userController.login);
   router.post('/auth/register', userController.register);
-  router.get('/auth/user',  authMiddleware, userController.me);
+  router.get('/auth/user', authMiddleware, userController.me);
   // Sign by Google
-  router.get('/auth/google',  passport.authenticate('google', { scope: ['profile', 'email'] }) );
+  router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }) );
   router.get(
     '/oauth2/redirect/google', 
     passport.authenticate('google', { 
@@ -71,6 +72,11 @@ export const createRouter = (upload) => {
     .get(quizController.getByUuid)
     .put(quizController.update)
     .delete(quizController.delete);
+
+    // =========================
+    // USER ROUTES
+    // =========================
+    router.post('/subjects/:subSlug/topics/:topSlug/ai', authMiddleware, aiController.askAI);
 
   return router;
 
