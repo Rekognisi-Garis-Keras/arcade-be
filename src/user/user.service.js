@@ -8,6 +8,13 @@ export class UserService {
   }
 
   async register(data) {
+    // validate
+    const isExist = await this.userRepo.findByEmail(data.email);
+    if (isExist) {
+      throw new Error("user already exist");
+    }
+
+    // create process
     const hashed = await bcrypt.hash(data.password, 10);
     const newUser = { ...data, password: hashed }
     const user = await this.userRepo.create(newUser);

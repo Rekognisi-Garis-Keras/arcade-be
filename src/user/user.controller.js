@@ -1,5 +1,4 @@
 import { userRegisterSchema } from "./dto/user-request.dto.js";
-import { UserResponseDto } from "./dto/user-response.dto.js";
 import { ResponseUtil } from "../utils/response.util.js";
 
 export class UserController {
