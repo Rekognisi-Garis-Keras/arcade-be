@@ -47,7 +47,7 @@ export class UserController {
       
       // redirect to frontend (bring token)
       const FRONTEND_URL = process.env.FRONTEND_URL || "localhost:3000";
-      res.redirect(`${FRONTEND_URL}?token=${result.token}`);
+      res.redirect(`${FRONTEND_URL}/login/google/callback?token=${result.token}`);
     } catch (error) {
       console.error(error);
       return ResponseUtil.error(res, 500, "Failed to login by google", error.message);
