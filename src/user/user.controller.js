@@ -73,11 +73,11 @@ export class UserController {
 
   updateProfile = async (req, res) => {
     try {
-      const { name, bio } = req.body;
-      if (typeof name === "undefined" && typeof bio === "undefined") {
+      const { name, bio, phone } = req.body;
+      if (typeof name === "undefined" && typeof bio === "undefined" && typeof req.body.phone === "undefined") {
         return ResponseUtil.validationError(res, "At least one field (name or bio) is required to update");
       }
-      const updatedUser = await this.userService.updateProfile(req.user.id, { name, bio });
+      const updatedUser = await this.userService.updateProfile(req.user.id, { name, bio, phone });
       return ResponseUtil.success(res, 200, "Profile updated successfully", updatedUser);
     } catch (error) {
       console.error(error);

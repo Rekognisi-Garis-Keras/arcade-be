@@ -17,6 +17,7 @@ model User {
   role       Role     @default(student)
   googleId   String?  @unique
   created_at DateTime @default(now())
+  phone      String?
   avatar     String?
   bio        String?
 

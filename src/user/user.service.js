@@ -77,6 +77,7 @@ export class UserService {
     const updateData = {};
     if (typeof data.name !== "undefined") updateData.name = data.name;
     if (typeof data.bio !== "undefined") updateData.bio = data.bio;
+    if (typeof data.phone !== "undefined") updateData.phone = data.phone;
 
     if (Object.keys(updateData).length === 0) {
       throw new Error("No valid fields to update (name, bio)");
