@@ -1,4 +1,5 @@
 import prisma from "./prisma.js";
+import bcrypt from "bcrypt";
 
 function generateSlug(text) {
   return text
@@ -187,6 +188,92 @@ const topics = {
   ],
 };
 
+const users = [
+  {
+    name: "Admin sudah datang",
+    email: "admin@example.com",
+    password: "password123",
+    role: "admin",
+    googleId: null,
+    phone: "081234567890",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+    bio: "Super admin user",
+  },
+  {
+    name: "Guru Sains",
+    email: "teacher@example.com",
+    password: "password123",
+    role: "teacher",
+    googleId: null,
+    phone: "081234567891",
+    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
+    bio: "Guru mata pelajaran Sains",
+  },
+  {
+    name: "Siswa Pintar",
+    email: "student@example.com",
+    password: "password123",
+    role: "student",
+    googleId: null,
+    phone: "081234567892",
+    avatar: "https://randomuser.me/api/portraits/men/3.jpg",
+    bio: "Siswa yang aktif belajar",
+  },
+];
+
+const quizzes = [
+  {
+    question: "Apa ibukota Indonesia?",
+    options: [
+      { id: "a", text: "Jakarta" },
+      { id: "b", text: "Bandung" },
+      { id: "c", text: "Surabaya" },
+      { id: "d", text: "Medan" },
+    ],
+    correct_answer: "a"
+  },
+  {
+    question: "Senyawa kimia H2O dikenal sebagai?",
+    options: [
+      { id: "a", text: "Karbon Dioksida" },
+      { id: "b", text: "Oksigen" },
+      { id: "c", text: "Air" },
+      { id: "d", text: "Hidrogen" },
+    ],
+    correct_answer: "c"
+  },
+  {
+    question: "Planet terdekat dengan Matahari?",
+    options: [
+      { id: "a", text: "Venus" },
+      { id: "b", text: "Merkurius" },
+      { id: "c", text: "Mars" },
+      { id: "d", text: "Bumi" },
+    ],
+    correct_answer: "b"
+  },
+  {
+    question: "Bagian sel yang berfungsi sebagai pusat kontrol sel?",
+    options: [
+      { id: "a", text: "Mitokondria" },
+      { id: "b", text: "Ribosom" },
+      { id: "c", text: "Nukleus" },
+      { id: "d", text: "Kloroplas" },
+    ],
+    correct_answer: "c"
+  },
+  {
+    question: "Gunung tertinggi di Indonesia adalah?",
+    options: [
+      { id: "a", text: "Gunung Rinjani" },
+      { id: "b", text: "Gunung Kerinci" },
+      { id: "c", text: "Gunung Semeru" },
+      { id: "d", text: "Puncak Jaya (Carstensz Pyramid)" },
+    ],
+    correct_answer: "d"
+  }
+];
+
 async function main() {
   console.log("Starting seeding...");
 
@@ -197,6 +284,28 @@ async function main() {
   await prisma.quiz.deleteMany();
   await prisma.topic.deleteMany();
   await prisma.subject.deleteMany();
+  await prisma.user.deleteMany();
+
+  // Seed: users
+  console.log("Seeding users...");
+  let userCount = 0;
+  for (const user of users) {
+    let hashedPassword = null;
+    if (user.password) {
+      hashedPassword = await bcrypt.hash(user.password, 10);
+    }
+    await prisma.user.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        password: hashedPassword,
+        role: user.role,
+        googleId: user.googleId,
+      }
+    });
+    userCount++;
+    console.log(`Created user: ${user.email}`);
+  }
 
   // Seed: subjects
   console.log("Seeding subjects...");
@@ -245,9 +354,49 @@ async function main() {
     }
   }
 
+  // Seed: quiz
+  console.log("\nSeeding quizzes...");
+  let quizCount = 0;
+
+  for (const [subjectName, topicsData] of Object.entries(topics)) {
+    const subject = seededSubjects[subjectName];
+    if (!subject) continue;
+
+    for (const topicData of topicsData) {
+      const quizzesForTopic = Array.isArray(topicData.quizzes) && topicData.quizzes.length > 0
+        ? topicData.quizzes
+        : quizzes;
+
+      const topicSlug = generateSlug(topicData.title);
+      const topic = await prisma.topic.findFirst({
+        where: {
+          subject_id: subject.id,
+          slug: topicSlug,
+        },
+      });
+      if (!topic) continue;
+
+      for (const quiz of quizzesForTopic) {
+        await prisma.quiz.create({
+          data: {
+            topic_id: topic.id,
+            question: quiz.question,
+            options: quiz.options,
+            correct_answer: quiz.correct_answer,
+          },
+        });
+        quizCount++;
+        console.log(`Created quiz for topic: ${topicData.title}`);
+      }
+    }
+  }
+
   console.log(`\nSeeding completed!`);
+
+  console.log(`- ${userCount} users in database`);
   console.log(`- ${subjects.length} subjects created`);
   console.log(`- ${topicCount} topics created`);
+  console.log(`- ${quizCount} quizzes created`);
 }
 
 main()
