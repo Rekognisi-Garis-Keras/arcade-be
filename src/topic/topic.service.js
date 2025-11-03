@@ -1,5 +1,7 @@
 import { generateSlug } from "../utils/slug.util.js";
 import { TopicResponseDTO } from "./dto/topic-response.dto.js";
+import { NotFoundError, ValidationError } from "../utils/error.util.js";
+import { topicCreateSchema, topicUpdateSchema } from "./dto/topic-request.dto.js";
 
 export class TopicService {
   constructor(topicRepo, subjectService) {
@@ -8,10 +10,15 @@ export class TopicService {
   }
 
   async createTopic(subSlug, data) {
+    const { error, value } = topicCreateSchema.validate(data);
+    if (error) {
+      throw new ValidationError(error.details[0].message, error.details);
+    }
+
     // subject find
     const subject = await this.subjectService.getSubjectBySlug(subSlug);
     if (!subject) {
-      throw new Error("subject not found");
+      throw new NotFoundError("Subject not found");
     }
 
     // generate topic slug
@@ -20,7 +27,7 @@ export class TopicService {
     // validate
     const findSlug = await this.topicRepo.findByTopicSlug(slug);
     if (findSlug) {
-      throw new Error("topic already exist");
+      throw new ValidationError("Topic already exists");
     }
 
     // create
@@ -31,31 +38,55 @@ export class TopicService {
 
   async getTopicByTopicSlug(slug) {
     const topic = await this.topicRepo.findByTopicSlug(slug);
-    return topic ? new TopicResponseDTO(topic) : null;
+    if (!topic) {
+      throw new NotFoundError("Topic not found");
+    }
+    return new TopicResponseDTO(topic);
   }
 
   async getTopicBySubjectSlug(slug) {
     const topics = await this.topicRepo.findBySubjectSlug(slug);
-    return topics ? topics.map(topic => new TopicResponseDTO(topic)) : null;
+    if (!topics || topics.length === 0) {
+      throw new NotFoundError("Topics for this subject not found");
+    }
+    return topics.map(topic => new TopicResponseDTO(topic));
   }
 
   async updateTopic(slug, data) {
-    let updatedData = { ...data };
-    if (data.title) {
-      const newSlug = generateSlug(data.title);
-      // validate
+    // find topic by slug
+    const existingTopic = await this.topicRepo.findByTopicSlug(slug);
+    if (!existingTopic) {
+      throw new NotFoundError("Topic not found");
+    }
+
+    // validate
+    const { error, value } = topicUpdateSchema.validate(data);
+    if (error) {
+      throw new ValidationError(error.details[0].message, error.details);
+    }
+
+    let updatedData = { ...value };
+    if (value.title) {
+      const newSlug = generateSlug(value.title);
+
       const findSlug = await this.topicRepo.findByTopicSlug(newSlug);
-      if (findSlug) {
-        throw new Error("topic already exist");
+      if (findSlug && findSlug.slug !== slug) {
+        throw new ValidationError("Topic with this title already exists");
       }
+      
       updatedData.slug = newSlug;
     }
+
     const topic = await this.topicRepo.update(slug, updatedData);
     return new TopicResponseDTO(topic);
   }
 
   async deleteTopic(slug) {
+    const existingTopic = await this.topicRepo.findByTopicSlug(slug);
+    if (!existingTopic) {
+      throw new NotFoundError("Topic not found");
+    }
     const topic = await this.topicRepo.delete(slug);
-    return topic;
+    return new TopicResponseDTO(topic);
   }
 }

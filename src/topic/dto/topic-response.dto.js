@@ -7,6 +7,8 @@ export class TopicResponseDTO {
     this.desc = topic.desc;
     this.model_url = topic.model_url;
     this.marker_img_url = topic.marker_img_url;
+    this.scale_model = topic.scale_model;
+    this.finished = topic.finished;
     this.content = topic.content;
     this.created_at = topic.created_at;
 

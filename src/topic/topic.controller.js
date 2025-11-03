@@ -6,80 +6,53 @@ export class TopicController {
     this.topicService = topicService;
   }
 
-  create = async (req, res) => {
+  create = async (req, res, next) => {
     try {
       const { subSlug } = req.params;
-      const { error, value } = topicCreateSchema.validate(req.body);
-      if (error) {
-        return ResponseUtil.validationError(res, error.details[0].message, error.details)
-      }
-      const topic = await this.topicService.createTopic(subSlug, value);
-      ResponseUtil.success(res, 201, "Topic created successfuly", topic);
+      const topic = await this.topicService.createTopic(subSlug, req.body);
+      return ResponseUtil.success(res, 201, "Topic created successfuly", topic);
     } catch (error) {
-      console.error(error);
-      return ResponseUtil.error(res, 500, "Failed to create topic", error.message);
+      next(error);
     }
   }
 
-  getByTopicSlug = async (req, res) => {
+  getByTopicSlug = async (req, res, next) => {
     try {
       const { topSlug } = req.params;
       const topic = await this.topicService.getTopicByTopicSlug(topSlug);
-      if (!topic) {
-        return ResponseUtil.notFound(res, "Topic not found");
-      }
       return ResponseUtil.success(res, 200, "Topic retrieved successfully", topic);
     } catch (error) {
-      console.error(error);
-      return ResponseUtil.error(res, 500, "Failed to retrieve topic", error.message);
+      next(error);
     }
   }
   
-  getBySubjectSlug = async (req, res) => {
+  getBySubjectSlug = async (req, res, next) => {
     try {
       const { subSlug } = req.params;
       const topics = await this.topicService.getTopicBySubjectSlug(subSlug);
-      if (!topics) {
-        return ResponseUtil.notFound(res, "Topic not found");
-      }
       return ResponseUtil.success(res, 200, "Topic retrieved successfully", topics);
     } catch (error) {
-      console.error(error);
-      return ResponseUtil.error(res, 500, "Failed to retrieve topic", error.message);
+      next(error);
     }
   }
 
-  update = async (req, res) => {
+  update = async (req, res, next) => {
     try {
       const { topSlug } = req.params;
-      const topic = await this.topicService.getTopicByTopicSlug(topSlug);
-      if (!topic) {
-        return ResponseUtil.notFound(res, "Topic not found");
-      }
-      const { error, value } = topicUpdateSchema.validate(req.body);
-      if (error) {
-        return ResponseUtil.validationError(res, error.details[0].message, error.details);
-      }
-      const updatedTopic = await this.topicService.updateTopic(topSlug, value);
+      const updatedTopic = await this.topicService.updateTopic(topSlug, req.body);
       return ResponseUtil.success(res, 200, "Topic updated successfully", updatedTopic);
     } catch (error) {
-      console.error(error);
-      return ResponseUtil.error(res, 500, "Failed to update topic", error.message);
+      next(error);
     }
   }
 
-  delete = async (req, res) => {
+  delete = async (req, res, next) => {
     try {
       const { topSlug } = req.params;
-      const topic = await this.topicService.getTopicByTopicSlug(topSlug);
-      if (!topic) {
-        return ResponseUtil.notFound(res, "Topic not found");
-      }
       await this.topicService.deleteTopic(topSlug);
-      return ResponseUtil.success(res, 200, "Topic deleted successfully", topic);
+      return ResponseUtil.success(res, 200, "Topic deleted successfully");
     } catch (error) {
-      console.error(error);
-      return ResponseUtil.error(res, 500, "Failed to delete topic", error.message);
+      next(error);
     }
   }
 }
