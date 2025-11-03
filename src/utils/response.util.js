@@ -20,9 +20,9 @@ export class ResponseUtil {
     );
   }
 
-  static validationError(res, message = "Validation Error", validationErrors = null) {
+  static validationError(res, message = "Validation Error", details = null) {
     return res.status(400).json(
-      ResponseUtil.baseResponse("error", 400, message, validationErrors)
+      ResponseUtil.baseResponse("error", 400, message, details)
     );
   }
 

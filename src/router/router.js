@@ -40,28 +40,28 @@ export const createRouter = (upload) => {
   // =========================
   router
     .route("/subjects")
-    .post(upload.single("thumbnail"), subjectController.create)
+    .post(authMiddleware, upload.single("thumbnail"), subjectController.create)
     .get(subjectController.getAll);
 
   router
     .route("/subjects/:slug")
     .get(subjectController.getBySlug)
-    .put(upload.single("thumbnail"), subjectController.update)
-    .delete(subjectController.delete);
+    .put(authMiddleware, upload.single("thumbnail"), subjectController.update)
+    .delete(authMiddleware, subjectController.delete);
 
   // =========================
   // TOPIC ROUTES
   // =========================
   router
     .route("/subjects/:subSlug/topics")
-    .post(topicController.create)
-    .get(topicController.getBySubjectSlug);
+    .post(authMiddleware, topicController.create)
+    .get(authMiddleware, topicController.getBySubjectSlug);
 
   router
     .route("/subjects/:subSlug/topics/:topSlug")
-    .get(topicController.getByTopicSlug)
-    .put(topicController.update)
-    .delete(topicController.delete);
+    .get(authMiddleware, topicController.getByTopicSlug)
+    .put(authMiddleware, topicController.update)
+    .delete(authMiddleware, topicController.delete);
 
   // =========================
   // QUIZ ROUTES
@@ -71,14 +71,14 @@ export const createRouter = (upload) => {
     
   router
     .route("/subjects/:subSlug/topics/:topSlug/quizzes")
-    .post(quizController.create)
-    .get(quizController.getByTopic);
+    .post(authMiddleware, quizController.create)
+    .get(authMiddleware, quizController.getByTopic);
 
   router
     .route("/subjects/:subSlug/topics/:topSlug/quizzes/:uuid")
-    .get(quizController.getByUuid)
-    .put(quizController.update)
-    .delete(quizController.delete);
+    .get(authMiddleware, quizController.getByUuid)
+    .put(authMiddleware, quizController.update)
+    .delete(authMiddleware, quizController.delete);
 
     // =========================
     // USER ROUTES

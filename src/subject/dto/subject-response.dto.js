@@ -5,6 +5,14 @@ export class SubjectResponseDto {
     this.slug = subject.slug;
     this.desc = subject.desc;
     this.thumbnail = subject.thumbnail_url;
-    this.topics = subject.topics;
+    
+    if (subject.topics) {
+      this.topics = subject.topics.map(topic => ({
+        id: topic.id,
+        title: topic.title,
+        desc: topic.desc,
+        finished: topic.finished,
+      }));
+    }
   }
 }

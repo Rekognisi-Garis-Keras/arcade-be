@@ -6,6 +6,7 @@ import { createRouter } from "./src/router/router.js";
 import Multer from "multer";
 import cors from "cors";
 import { v2 as cloudinary } from 'cloudinary';
+import { errorHandler } from "./src/middleware/errorHandler.js";
 
 dotenv.config();
 
@@ -38,12 +39,13 @@ app.use(passport.session());
 
 app.use("/", createRouter(upload));
 
-const PORT = process.env.PORT || 3000;
-
 app.get("/", (req, res) => {
   res.status(200).send({ message: "ARcade API" });
 });
 
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Application running on localhost:${PORT}`);
 })
