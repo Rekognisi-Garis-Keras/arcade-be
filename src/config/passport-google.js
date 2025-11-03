@@ -28,7 +28,8 @@ passport.use(
           const newUser = {
             name: profile.displayName,
             email: email,
-            googleId: profile.id
+            googleId: profile.id,
+            avatar: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null
           };
           user = await userRepo.create(newUser);
           return done(null, new UserResponseDto(user));

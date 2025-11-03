@@ -17,6 +17,8 @@ model User {
   role       Role     @default(student)
   googleId   String?  @unique
   created_at DateTime @default(now())
+  avatar     String?
+  bio        String?
 
   quiz_results  QuizResult[]
 
@@ -52,7 +54,9 @@ model Topic {
   desc            String @db.Text
   model_url       String
   marker_img_url  String
-  content         String @db.Text
+  scale_model     String
+  finished        Boolean @default(false)
+  content         String? @db.Text 
   created_at      DateTime @default(now())
 
   subject         Subject @relation(references: [id], fields: [subject_id])

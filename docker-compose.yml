@@ -11,20 +11,20 @@ services:
     ports:
       - "5432:5432"
 
-  app:
-    build: .
-    restart: always
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    depends_on:
-      - db
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    command: >
-      npx nodemon --legacy-watch src/index.js
+  # app:
+  #   build: .
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   command: >
+  #     npx nodemon --legacy-watch src/index.js
 
 volumes:
   pg_data:

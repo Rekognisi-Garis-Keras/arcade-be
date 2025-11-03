@@ -1,5 +1,6 @@
 import { userRegisterSchema } from "./dto/user-request.dto.js";
 import { ResponseUtil } from "../utils/response.util.js";
+import { handleUpload } from "../config/cloudinary.js";
 
 export class UserController {
   constructor(userService) {
@@ -67,6 +68,40 @@ export class UserController {
     } catch (error) {
       console.error(error);
       return ResponseUtil.error(res, 500, "Failed to get user", error.message);
+    }
+  }
+
+  updateProfile = async (req, res) => {
+    try {
+      const { name, bio } = req.body;
+      if (typeof name === "undefined" && typeof bio === "undefined") {
+        return ResponseUtil.validationError(res, "At least one field (name or bio) is required to update");
+      }
+      const updatedUser = await this.userService.updateProfile(req.user.id, { name, bio });
+      return ResponseUtil.success(res, 200, "Profile updated successfully", updatedUser);
+    } catch (error) {
+      console.error(error);
+      return ResponseUtil.error(res, 500, "Failed to update profile", error.message);
+    }
+  }
+
+  updateAvatar = async (req, res) => {
+    try {
+      // upload file to cloudinary
+      if (!req.file) {
+        return ResponseUtil.validationError(res, "Avatar file is required");
+      }
+
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+      const cldRes = await handleUpload(dataURI, "avatar");
+
+      const fileUrl = cldRes.secure_url;
+      const updatedUser = await this.userService.updateAvatar(req.user.id, fileUrl);
+      return ResponseUtil.success(res, 200, "Avatar updated successfully", updatedUser);
+    } catch (error) {
+      console.error(error);
+      return ResponseUtil.error(res, 500, "Failed to update avatar", error.message);
     }
   }
 }

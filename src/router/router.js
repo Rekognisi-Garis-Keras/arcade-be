@@ -17,14 +17,21 @@ export const createRouter = (upload) => {
   router.post('/auth/login', userController.login);
   router.post('/auth/register', userController.register);
   router.get('/auth/user', authMiddleware, userController.me);
+
+  // Update profile
+  router.put('/user/profile', authMiddleware, userController.updateProfile);
+
+  // Update avatar
+  router.put('/user/avatar', authMiddleware, upload.single('avatar'), userController.updateAvatar);
+
   // Sign by Google
-  router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }) );
+  router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
   router.get(
-    '/oauth2/redirect/google', 
-    passport.authenticate('google', { 
+    '/oauth2/redirect/google',
+    passport.authenticate('google', {
       failureRedirect: '/login-failure',
       session: true
-    }), 
+    }),
     userController.loginByGoogle
   );
 

@@ -12,4 +12,11 @@ export class UserRepository {
   async findByEmail(email) {
     return await prisma.user.findFirst({ where: { email } });
   }
+
+  async update(id, data) {
+    return await prisma.user.update({
+      where: { id },
+      data,
+    });
+  }
 }

@@ -72,4 +72,31 @@ export class UserService {
     }
     return new UserResponseDto(user);
   }
+
+  async updateProfile(id, data) {
+    const updateData = {};
+    if (typeof data.name !== "undefined") updateData.name = data.name;
+    if (typeof data.bio !== "undefined") updateData.bio = data.bio;
+
+    if (Object.keys(updateData).length === 0) {
+      throw new Error("No valid fields to update (name, bio)");
+    }
+
+    const updatedUser = await this.userRepo.update(id, updateData);
+    if (!updatedUser) {
+      throw new Error("User not found or update failed");
+    }
+    return new UserResponseDto(updatedUser);
+  }
+
+  async updateAvatar(id, fileUrl) {
+    if (!fileUrl) {
+      throw new Error("No avatar file URL provided");
+    }
+    const updatedUser = await this.userRepo.update(id, { avatar: fileUrl });
+    if (!updatedUser) {
+      throw new Error("User not found or update failed");
+    }
+    return new UserResponseDto(updatedUser);
+  }
 }
