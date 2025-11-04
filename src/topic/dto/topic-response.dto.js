@@ -12,6 +12,10 @@ export class TopicResponseDTO {
     this.content = topic.content;
     this.created_at = topic.created_at;
 
+    if (topic.subject) {
+      this.subject = topic.subject;
+    }
+
     if (topic.quizzes) {
       this.quizzes = topic.quizzes;
     }

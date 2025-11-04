@@ -16,6 +16,15 @@ export class TopicController {
     }
   }
 
+  getAll = async (req, res, next) => {
+    try {
+      const topics = await this.topicService.getAllTopics();
+      return ResponseUtil.success(res, 200, "Topics retrieved successfully", topics);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   getByTopicSlug = async (req, res, next) => {
     try {
       const { topSlug } = req.params;

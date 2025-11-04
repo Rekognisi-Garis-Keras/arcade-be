@@ -36,6 +36,11 @@ export class TopicService {
     return new TopicResponseDTO(topic);
   }
 
+  async getAllTopics() {
+    const topics = await this.topicRepo.findAll();
+    return topics.map(topic => new TopicResponseDTO(topic));
+  }
+
   async getTopicByTopicSlug(slug) {
     const topic = await this.topicRepo.findByTopicSlug(slug);
     if (!topic) {

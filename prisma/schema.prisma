@@ -60,7 +60,7 @@ model Topic {
   content         String? @db.Text 
   created_at      DateTime @default(now())
 
-  subject         Subject @relation(references: [id], fields: [subject_id])
+  subject         Subject @relation(references: [id], fields: [subject_id], onDelete: Cascade)
   quizzes         Quiz[]
   quiz_results    QuizResult[]
 
@@ -75,9 +75,10 @@ model Quiz {
   question        String   @db.Text
   options         Json
   correct_answer  String
+  explain         String?
   created_at      DateTime @default(now())
 
-  topic           Topic @relation(references: [id], fields: [topic_id])
+  topic           Topic @relation(references: [id], fields: [topic_id], onDelete: Cascade)
 
   @@map("quizzes")
 }
@@ -91,8 +92,8 @@ model QuizResult {
   score Int
   created_at DateTime @default(now())
 
-  topic Topic @relation(references: [id], fields: [topic_id])
-  user User @relation(references: [id], fields: [user_id])
+  topic Topic @relation(references: [id], fields: [topic_id], onDelete: Cascade)
+  user User @relation(references: [id], fields: [user_id], onDelete: Cascade)
   quiz_answers QuizAnswer[]
 
   @@map("quiz_results")
@@ -105,7 +106,7 @@ model QuizAnswer {
   answer      String
   is_correct  Boolean
 
-  quiz_result QuizResult @relation(references: [id], fields: [result_id])
+  quiz_result QuizResult @relation(references: [id], fields: [result_id], onDelete: Cascade)
 
   @@map("quiz_answers")
 }

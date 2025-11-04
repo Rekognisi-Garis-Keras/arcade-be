@@ -53,6 +53,10 @@ export const createRouter = (upload) => {
   // TOPIC ROUTES
   // =========================
   router
+    .route("/topics")
+    .get(authMiddleware, topicController.getAll);
+
+  router
     .route("/subjects/:subSlug/topics")
     .post(authMiddleware, topicController.create)
     .get(authMiddleware, topicController.getBySubjectSlug);

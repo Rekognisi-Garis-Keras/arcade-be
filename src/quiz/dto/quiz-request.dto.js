@@ -9,6 +9,7 @@ export const quizCreateSchema = Joi.object({
     })
   ).length(4).required(),
   correct_answer: Joi.string().valid("a", "b", "c", "d").required(),
+  explain: Joi.string().required(),
 });
 
 export const quizUpdateSchema = Joi.object({
@@ -19,5 +20,6 @@ export const quizUpdateSchema = Joi.object({
       text: Joi.string().required()
     })
   ).length(4),
-  correct_answer: Joi.string().valid("a", "b", "c", "d")
+  correct_answer: Joi.string().valid("a", "b", "c", "d"),
+  explain: Joi.string(),
 });

@@ -5,6 +5,10 @@ export class TopicRepository {
     return await prisma.topic.create({ data });
   }
 
+  async findAll() {
+    return await prisma.topic.findMany({ include: { subject: true } });
+  }
+
   async findByTopicSlug(slug) {
     return await prisma.topic.findFirst({ 
       where: { slug }, 
