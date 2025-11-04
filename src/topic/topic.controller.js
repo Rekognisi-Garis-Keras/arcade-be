@@ -8,9 +8,17 @@ export class TopicController {
 
   create = async (req, res, next) => {
     try {
+      const modelFile = req?.files?.model?.[0];
+      const markerFile = req?.files?.marker?.[0];
+      if (!modelFile || !markerFile) {
+        return ResponseUtil.error(res, 400, "Model & marker file is required");
+      }
       const { subSlug } = req.params;
-      const topic = await this.topicService.createTopic(subSlug, req.body);
-      return ResponseUtil.success(res, 201, "Topic created successfuly", topic);
+      const topic = await this.topicService.createTopic(subSlug, req.body, {
+        model: modelFile,
+        marker: markerFile,
+      });
+      return ResponseUtil.success(res, 201, "Topic created successfully", topic);
     } catch (error) {
       next(error);
     }

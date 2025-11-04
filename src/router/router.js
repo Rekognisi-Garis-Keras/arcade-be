@@ -58,7 +58,14 @@ export const createRouter = (upload) => {
 
   router
     .route("/subjects/:subSlug/topics")
-    .post(authMiddleware, topicController.create)
+    .post(
+      authMiddleware,
+      upload.fields([
+        { name: "model", maxCount: 1 },
+        { name: "marker", maxCount: 1 }
+      ]),
+      topicController.create
+    )
     .get(authMiddleware, topicController.getBySubjectSlug);
 
   router

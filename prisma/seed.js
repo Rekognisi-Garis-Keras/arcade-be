@@ -339,7 +339,6 @@ async function main() {
     for (const topicData of topicsData) {
       await prisma.topic.create({
         data: {
-          subject_id: subject.id,
           title: topicData.title,
           slug: generateSlug(topicData.title),
           desc: topicData.desc,
@@ -347,6 +346,7 @@ async function main() {
           marker_img_url: topicData.marker_img_url,
           scale_model: topicData.scale_model,
           content: topicData.content,
+          subject: { connect: { id: subject.id } },
         },
       });
       topicCount++;

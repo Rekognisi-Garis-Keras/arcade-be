@@ -2,6 +2,7 @@ import { generateSlug } from "../utils/slug.util.js";
 import { TopicResponseDTO } from "./dto/topic-response.dto.js";
 import { NotFoundError, ValidationError } from "../utils/error.util.js";
 import { topicCreateSchema, topicUpdateSchema } from "./dto/topic-request.dto.js";
+import { uploadToPublic } from "../utils/upload.util.js";
 
 export class TopicService {
   constructor(topicRepo, subjectService) {
@@ -9,7 +10,7 @@ export class TopicService {
     this.subjectService = subjectService;
   }
 
-  async createTopic(subSlug, data) {
+  async createTopic(subSlug, data, files) {
     const { error, value } = topicCreateSchema.validate(data);
     if (error) {
       throw new ValidationError(error.details[0].message, error.details);
@@ -22,7 +23,7 @@ export class TopicService {
     }
 
     // generate topic slug
-    const slug = generateSlug(data.title);
+    const slug = generateSlug(value.title);
 
     // validate
     const findSlug = await this.topicRepo.findByTopicSlug(slug);
@@ -30,8 +31,27 @@ export class TopicService {
       throw new ValidationError("Topic already exists");
     }
 
+    // handle file uploads
+    let model_url = null;
+    let marker_img_url = null;
+    if (files && files.model) {
+      const uploadModel = await uploadToPublic(files.model, "topic/models");
+      model_url = uploadModel.url;
+    }
+    if (files && files.marker) {
+      const uploadMarker = await uploadToPublic(files.marker, "topic/markers");
+      marker_img_url = uploadMarker.url;
+    }
+
     // create
-    const newTopic = { ...data, slug, subject_id: subject.id };
+    const newTopic = { 
+      ...data, 
+      slug,
+      model_url,
+      marker_img_url,
+      subject: { connect: { id: subject.id } }
+    };
+    console.log(newTopic);
     const topic = await this.topicRepo.create(newTopic);
     return new TopicResponseDTO(topic);
   }
