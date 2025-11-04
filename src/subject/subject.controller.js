@@ -56,7 +56,7 @@ export class SubjectController {
     try {
       const { slug } = req.params;
       await this.subjectService.deleteSubject(slug);
-      return ResponseUtil.success(res, 200, "Subject deleted successfully", subject);
+      return ResponseUtil.success(res, 200, "Subject deleted successfully");
     } catch (error) {
       next(error);
     }
