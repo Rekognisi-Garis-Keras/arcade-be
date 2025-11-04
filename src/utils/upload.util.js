@@ -19,3 +19,28 @@ export const uploadToPublic = async (file, folder = "") => {
     path: filePath,
   };
 };
+
+export const deleteFromPublic = async (url) => {
+  if (!url) return false;
+  const normalizedUrl = url.replace(/^\/+/, "");
+  const filePath = path.join(process.cwd(), normalizedUrl);
+
+  try {
+    await fs.unlink(filePath);
+    return true;
+  } catch (err) {
+    if (err.code !== "ENOENT") 
+      console.error("❌ deleteFromPublic error:", err.message);
+    return false;
+  }
+};
+
+export const processFile = async (oldUrl, newFile, folder) => {
+  if (newFile) {
+    if (oldUrl) await deleteFromPublic(oldUrl);
+    const uploaded = await uploadToPublic(newFile, folder);
+    return uploaded.url;
+  }
+  return oldUrl;
+};
+

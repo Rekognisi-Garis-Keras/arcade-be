@@ -2,7 +2,7 @@ import { generateSlug } from "../utils/slug.util.js";
 import { TopicResponseDTO } from "./dto/topic-response.dto.js";
 import { NotFoundError, ValidationError } from "../utils/error.util.js";
 import { topicCreateSchema, topicUpdateSchema } from "./dto/topic-request.dto.js";
-import { uploadToPublic } from "../utils/upload.util.js";
+import { deleteFromPublic, processFile, uploadToPublic } from "../utils/upload.util.js";
 
 export class TopicService {
   constructor(topicRepo, subjectService) {
@@ -77,40 +77,50 @@ export class TopicService {
     return topics.map(topic => new TopicResponseDTO(topic));
   }
 
-  async updateTopic(slug, data) {
+  async updateTopic(slug, data, files) {
     // find topic by slug
-    const existingTopic = await this.topicRepo.findByTopicSlug(slug);
-    if (!existingTopic) {
-      throw new NotFoundError("Topic not found");
-    }
+    const existing = await this.topicRepo.findByTopicSlug(slug);
+    if (!existing) throw new NotFoundError("Topic not found");
 
     // validate
     const { error, value } = topicUpdateSchema.validate(data);
-    if (error) {
-      throw new ValidationError(error.details[0].message, error.details);
-    }
-
+    if (error) throw new ValidationError(error.details[0].message, error.details);
     let updatedData = { ...value };
+
+    // slug
     if (value.title) {
       const newSlug = generateSlug(value.title);
-
-      const findSlug = await this.topicRepo.findByTopicSlug(newSlug);
-      if (findSlug && findSlug.slug !== slug) {
+      const duplicate = await this.topicRepo.findByTopicSlug(newSlug);
+      if (duplicate && duplicate.slug !== slug)
         throw new ValidationError("Topic with this title already exists");
-      }
-      
       updatedData.slug = newSlug;
     }
 
+    // handle file
+    updatedData.model_url = await processFile(
+      existing.model_url,
+      files?.model,
+      "topic/models"
+    );
+    updatedData.marker_img_url = await processFile(
+      existing.marker_img_url,
+      files?.marker,
+      "topic/markers"
+    );
+    
     const topic = await this.topicRepo.update(slug, updatedData);
     return new TopicResponseDTO(topic);
   }
 
   async deleteTopic(slug) {
-    const existingTopic = await this.topicRepo.findByTopicSlug(slug);
-    if (!existingTopic) {
-      throw new NotFoundError("Topic not found");
-    }
+    const existing = await this.topicRepo.findByTopicSlug(slug);
+    if (!existing) throw new NotFoundError("Topic not found");
+  
+    await Promise.all([
+      deleteFromPublic(existing.model_url),
+      deleteFromPublic(existing.marker_img_url),
+    ]);
+  
     const topic = await this.topicRepo.delete(slug);
     return new TopicResponseDTO(topic);
   }

@@ -71,7 +71,13 @@ export const createRouter = (upload) => {
   router
     .route("/subjects/:subSlug/topics/:topSlug")
     .get(authMiddleware, topicController.getByTopicSlug)
-    .put(authMiddleware, topicController.update)
+    .put(
+      authMiddleware, 
+      upload.fields([
+        { name: "model", maxCount: 1 },
+        { name: "marker", maxCount: 1 }
+      ]),
+      topicController.update)
     .delete(authMiddleware, topicController.delete);
 
   // =========================
