@@ -22,6 +22,7 @@ model User {
   bio        String?
 
   quiz_results  QuizResult[]
+  user_xp       UserXp?
 
   @@map("users")
 }
@@ -30,6 +31,16 @@ enum Role {
   student
   teacher
   admin
+}
+
+// === User XP
+model UserXp {
+  user_id Int   @id
+  xp      Int   @default(0)
+
+  user    User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_xps")
 }
 
 // === Subject Model
@@ -89,7 +100,7 @@ model QuizResult {
   uuid String @unique
   topic_id Int
   user_id Int
-  score Int
+  xp Int
   created_at DateTime @default(now())
 
   topic Topic @relation(references: [id], fields: [topic_id], onDelete: Cascade)

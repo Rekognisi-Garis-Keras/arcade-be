@@ -25,12 +25,16 @@ export class QuizResultService {
 
     // answer & correct checking
     let correctCount = 0;
+    let xp = 0;
     const resultDetails = [];
     for (const q of quizzes) {
       const userAnswer = userAnswers.find(a => a.quiz_id === q.id)?.answer;
 
       const isCorrect = userAnswer == q.correct_answer;
-      if (isCorrect) correctCount++;
+      if (isCorrect) {
+        correctCount++;
+        xp += 10; // XP +10
+      };
 
       resultDetails.push({
         answer: userAnswer,
@@ -38,15 +42,13 @@ export class QuizResultService {
         // correct_answer: isCorrect ? null : q.correct_answer,
       });
     }
-    // score calculating
-    const score = Math.floor(correctCount / quizzes.length * 100);
-
+    
     // create quiz result data
     const quizResultData = {
+      uuid: uuid(),
       topic_id: topic.id,
       user_id: data.user_id,
-      score: score,
-      uuid: uuid()
+      xp,
     };
 
     // create
@@ -63,7 +65,7 @@ export class QuizResultService {
 
     return {
       result: new QuizResultResponseDTO(newResult),
-      details: details
+      details,
     };
   }
 }

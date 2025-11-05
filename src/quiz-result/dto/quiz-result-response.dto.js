@@ -4,7 +4,7 @@ export class QuizResultResponseDTO {
     this.uuid = result.uuid;
     this.topic_id = result.topic_id;
     this.user_id = result.user_id;
-    this.score = result.score;
+    this.xp = result.xp;
     this.created_at = result.created_at;
 
     if (result.topic) {
