@@ -7,6 +7,7 @@ import { aiController } from "../ai/index.js";
 import passport from "passport";
 import { authMiddleware } from "../middleware/auth.js";
 import { quizResultController } from "../quiz-result/index.js";
+import { uXpController } from "../user-xp/index.js";
 
 export const createRouter = (upload) => {
   const router = express.Router();
@@ -97,14 +98,15 @@ export const createRouter = (upload) => {
     .put(authMiddleware, quizController.update)
     .delete(authMiddleware, quizController.delete);
 
-    // =========================
-    // USER ROUTES
-    // =========================
-    router.post('/subjects/:subSlug/topics/:topSlug/ai', authMiddleware, aiController.askAI);
+  // ====
+  // AI
+  // ====
+  router.post('/subjects/:subSlug/topics/:topSlug/ai', authMiddleware, aiController.askAI);
+
+  // ================
+  // Leaderboard & XP
+  // ================
+  router.get('/leaderboard', authMiddleware, uXpController.getLeaderboard);
 
   return router;
-
-  // =========================
-  // QUIZ RESULT ROUTES
-  // =========================
 };

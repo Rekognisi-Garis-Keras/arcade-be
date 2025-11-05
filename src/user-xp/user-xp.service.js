@@ -1,35 +1,54 @@
-import { NotFoundError } from "../utils/error.util";
-import { UserXpResponse } from "./dto/user-xp-response.dto";
+import { UserXpResponse } from "./dto/user-xp-response.dto.js";
 
 export class UserXpService {
   constructor(uXpRepo) {
     this.uXpRepo = uXpRepo;
   }
 
-  async create(data) {
-    const uXp = await this.uXpRepo.create(data);
-    return new UserXpResponse(uXp);
-  }
+  async getLeaderboard(userId, filter = {}) {
+    const uXps = await this.uXpRepo.findMany(filter);
+    let userXp = await this.uXpRepo.findByUserId(userId);
+    if (!userXp) {
+      userXp = await this.uXpRepo.create(userId, { xp: 0 });
+    }
 
-  async getAll() {
-    const uXps = await this.uXpRepo.findAll();
-    return uXps.map(uXp => new UserXpResponse(uXp));
+    // get user rank
+    const userRank = await this.uXpRepo.getUserRank(userId);
+    const topLeaderboard = uXps.map((uXp, index) => new UserXpResponse(uXp, (filter.offset || 0) + index + 1));
+    const isInLeaderboard = topLeaderboard.some(item => item.user_id === userId);
+    const result = { 
+      "top_leaderboard": topLeaderboard,
+    };
+    if (!isInLeaderboard) {
+      result["my_position"] = new UserXpResponse(userXp, userRank);
+    }
+    return result;
   }
 
   async getByUserId(userId) {
-    const uXp = await this.uXpRepo.findByUserId(userId);
-    if (!uXp) return null;
+    let uXp = await this.uXpRepo.findByUserId(userId);
+    if (!uXp) {
+      uXp = await this.uXpRepo.create(userId, { xp: 0 });
+    }
     return new UserXpResponse(uXp);
   }
 
-  async addXp(userId, xp) {
-    const uXp = await this.uXpRepo.findByUserId(userId);
-    if (!uXp) throw new NotFoundError("User XP record not found");
+  async create(userId, xp = 0) {
+    const uXp = await this.uXpRepo.create(userId, { xp });
+    return new UserXpResponse(uXp);
+  }
 
-    const updated = await this.uXpRepo.update(userId, {
-      xp: uXp.xp + xp
-    });
+  async createOrUpdate(userId, xp) {
+    const existingUXP = await this.uXpRepo.findByUserId(userId);
+    let uXp;
 
-    return new UserXpResponse(updated);
+    if (existingUXP) {
+      const newXp = existingUXP.xp + (xp || 0);
+      uXp = await this.uXpRepo.update(userId, { ...existingUXP, xp: newXp });
+    } else {
+      uXp = await this.uXpRepo.create(userId, { xp: xp || 0 });
+    }
+
+    return new UserXpResponse(uXp);
   }
 }
