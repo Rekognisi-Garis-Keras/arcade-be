@@ -51,10 +51,11 @@ export class QuizResultService {
       xp,
     };
 
-    // create
+    // exec
     const newResult = await this.quizResultRepo.create(quizResultData);
     const newAnswers = await this.quizAnswerService.createAnswers(newResult.id, resultDetails);
     const updateXp = await this.uXpService.createOrUpdate(data.user_id, xp);
+    const updateTopic = await this.topicService.updateTopic(topic.slug, { finished: true });
 
     const details = quizzes.map((quiz, idx) => {
       return {

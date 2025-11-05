@@ -12,4 +12,5 @@ export const topicUpdateSchema = Joi.object({
   desc: Joi.string(),
   scale_model: Joi.string(),
   content: Joi.string(),
+  finished: Joi.boolean(),
 });
