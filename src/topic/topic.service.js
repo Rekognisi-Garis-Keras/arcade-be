@@ -34,6 +34,8 @@ export class TopicService {
     // handle file uploads
     let model_url = null;
     let marker_img_url = null;
+    let icon_url = null;
+
     if (files && files.model) {
       const uploadModel = await uploadToPublic(files.model, "topic/models");
       model_url = uploadModel.url;
@@ -42,6 +44,10 @@ export class TopicService {
       const uploadMarker = await uploadToPublic(files.marker, "topic/markers");
       marker_img_url = uploadMarker.url;
     }
+    if (files && files.icon) {
+      const uploadIcon = await uploadToPublic(files.icon, "topic/icons");
+      icon_url = uploadIcon.url;
+    }
 
     // create
     const newTopic = { 
@@ -49,6 +55,7 @@ export class TopicService {
       slug,
       model_url,
       marker_img_url,
+      icon_url,
       subject: { connect: { id: subject.id } }
     };
     console.log(newTopic);
@@ -106,6 +113,11 @@ export class TopicService {
       existing.marker_img_url,
       files?.marker,
       "topic/markers"
+    );
+    updatedData.icon_url = await processFile(
+      existing.icon_url,
+      files?.icon,
+      "topic/icons"
     );
     
     const topic = await this.topicRepo.update(slug, updatedData);

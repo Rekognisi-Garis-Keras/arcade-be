@@ -10,13 +10,16 @@ export class TopicController {
     try {
       const modelFile = req?.files?.model?.[0];
       const markerFile = req?.files?.marker?.[0];
-      if (!modelFile || !markerFile) {
-        return ResponseUtil.error(res, 400, "Model & marker file is required");
+      const iconFile = req?.files?.icon?.[0];
+
+      if (!modelFile || !markerFile || !iconFile) {
+        return ResponseUtil.error(res, 400, "Model, marker, and icon file is required");
       }
       const { subSlug } = req.params;
       const topic = await this.topicService.createTopic(subSlug, req.body, {
         model: modelFile,
         marker: markerFile,
+        icon: iconFile,
       });
       return ResponseUtil.success(res, 201, "Topic created successfully", topic);
     } catch (error) {
@@ -58,10 +61,11 @@ export class TopicController {
       const { topSlug } = req.params;
       const modelFile = req?.files?.model?.[0];
       const markerFile = req?.files?.marker?.[0];
+      const iconFile = req?.files?.icon?.[0];
       const updatedTopic = await this.topicService.updateTopic(
         topSlug,
         req.body,
-        { model: modelFile, marker: markerFile }
+        { model: modelFile, marker: markerFile, icon: iconFile }
       );
       return ResponseUtil.success(res, 200, "Topic updated successfully", updatedTopic);
     } catch (error) {

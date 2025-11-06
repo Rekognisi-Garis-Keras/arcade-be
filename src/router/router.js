@@ -63,7 +63,8 @@ export const createRouter = (upload) => {
       authMiddleware,
       upload.fields([
         { name: "model", maxCount: 1 },
-        { name: "marker", maxCount: 1 }
+        { name: "marker", maxCount: 1 },
+        { name: "icon", maxCount: 1 },
       ]),
       topicController.create
     )
@@ -76,7 +77,8 @@ export const createRouter = (upload) => {
       authMiddleware, 
       upload.fields([
         { name: "model", maxCount: 1 },
-        { name: "marker", maxCount: 1 }
+        { name: "marker", maxCount: 1 },
+        { name: "icon", maxCount: 1 },
       ]),
       topicController.update)
     .delete(authMiddleware, topicController.delete);
