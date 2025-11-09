@@ -11,7 +11,7 @@ export class SubjectController {
   create = async (req, res, next) => {
     try {
       if (!req.file) {
-        return ResponseUtil.badRequest(res, "Thumbnail file is required");
+        return ResponseUtil.validationError(res, "Thumbnail file is required");
       }
       const subject = await this.subjectService.createSubject(req.body, req.file);
       return ResponseUtil.success(res, 201, "Subject created successfully", subject);
