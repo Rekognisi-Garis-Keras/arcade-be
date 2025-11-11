@@ -24,6 +24,16 @@ export class QuizController {
     }
   }
 
+  getAll = async (req, res) => {
+    try {
+      const quizzes = await this.quizService.getAllQuizzes();
+      ResponseUtil.success(res, 200, "quizzes fetched successfully", quizzes);
+    } catch (error) {
+      console.error(error);
+      ResponseUtil.error(res, 500, "failed to fetch quizzes");
+    }
+  }
+
   getByTopic = async (req, res) => {
     try {
       const { topSlug } = req.params;
@@ -48,54 +58,6 @@ export class QuizController {
       ResponseUtil.error(res, 500, "failed to fetch quiz");
     }
   }
-
-  // answer = async (req, res) => {
-  //   try {
-  //     const user = req.user;
-  //     // topics/:topSlug/quizzes/submit
-  //     // get topics quizzes
-  //     const { topSlug } = req.params;
-  //     const quizByTopic = await this.quizService.getQuizByTopic(topSlug);
-  //     // -- [Peek] ResponseUtil.success(res, 200, "quiz by topic fetched succesfuly", quizByTopic);
-  //     // answer correct checking
-  //     const { error, value } = quizSubmitSchema.validate(req.body);
-  //     if (error) {
-  //       return ResponseUtil.validationError(res, error.details[0].message, error.details);
-  //     }
-  //     const userAnswers = value.answers;
-  //     if (quizByTopic.length !== userAnswers.length) {
-  //       return ResponseUtil.validationError(res, "All quiz must be filled");
-  //     }
-
-  //     let correctCount = 0;
-  //     // resultDetails:
-  //     // - correct_count
-  //     // - score
-  //     // - all quiz with user_answer (str) + is_correct (bool)
-  //     const resultDetails = [];
-  //     for (const q of quizByTopic) {
-  //       const userAnswer = userAnswers.find(a => a.quiz_id === q.id)?.answer;
-
-  //       const isCorrect = userAnswer == q.correct_answer;
-  //       if (isCorrect) correctCount++;
-
-  //       resultDetails.push({
-  //         user_answer: userAnswer,
-  //         is_correct: isCorrect,
-  //         correct_answer: isCorrect ? null : q.correct_answer,
-  //         quiz: q,
-  //       });
-  //     }
-  //     // score = jawaban benar / jumlah soal * 100
-  //     const score = Math.floor(correctCount / quizByTopic.length * 100)
-      
-  //     // return response with detailed result (score, user answer, true/false, correct answer)
-  //     ResponseUtil.success(res, 200, "Quiz submited successfuly", resultDetails);
-  //   } catch (error) {
-  //     console.error(error);
-  //     ResponseUtil.error(res, 500, "failed to answer quiz", error);
-  //   }
-  // }
 
   update = async (req, res) => {
     try {

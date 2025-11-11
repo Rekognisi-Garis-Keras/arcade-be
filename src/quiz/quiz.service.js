@@ -25,6 +25,28 @@ export class QuizService {
     return new QuizResponseDTO(quiz);
   }
 
+  async getAllQuizzes() {
+    const quizzes = await this.quizRepo.findAll();
+    // Group quizzes by topic
+    const grouped = {};
+    quizzes.forEach(q => {
+      const topicId = q.topic ? q.topic.id : q.topic_id;
+      if (!grouped[topicId]) {
+        grouped[topicId] = {
+          topic: q.topic ? {
+            id: q.topic.id,
+            title: q.topic.title,
+            slug: q.topic.slug,
+          } : null,
+          quizzes: []
+        };
+      }
+      grouped[topicId].quizzes.push(new QuizResponseDTO(q));
+    });
+    // Return as array of topics with quizzes
+    return Object.values(grouped);
+  }
+
   async getQuizByTopic(topSlug) {
     const quizzes = await this.quizRepo.findByTopic(topSlug);
     return quizzes.map(q => new QuizResponseDTO(q));

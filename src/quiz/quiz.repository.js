@@ -5,6 +5,14 @@ export class QuizRepository {
     return await prisma.quiz.create({ data });
   }
 
+  async findAll() {
+    return await prisma.quiz.findMany({
+      include: {
+        topic: true
+      }
+    });
+  }
+
   async findByTopic(topSlug) {
     return await prisma.quiz.findMany({
       where: {

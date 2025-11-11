@@ -1,7 +1,4 @@
-import { handleUpload } from "../config/cloudinary.js";
-import { ValidationError } from "../utils/error.util.js";
 import { ResponseUtil } from "../utils/response.util.js";
-import { subjectCreateSchema, subjectUpdateSchema } from "./dto/subject-request.dto.js";
 
 export class SubjectController {
   constructor(subjectService) {
@@ -11,7 +8,7 @@ export class SubjectController {
   create = async (req, res, next) => {
     try {
       if (!req.file) {
-        return ResponseUtil.validationError(res, "Thumbnail file is required");
+        return ResponseUtil.validationError(res, "Icon file is required");
       }
       const subject = await this.subjectService.createSubject(req.body, req.file);
       return ResponseUtil.success(res, 201, "Subject created successfully", subject);
