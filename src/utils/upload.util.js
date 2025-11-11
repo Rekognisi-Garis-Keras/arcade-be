@@ -10,7 +10,13 @@ export const uploadToPublic = async (file, folder = "") => {
   const publicDir = path.join(process.cwd(), "public", folder);
   const filePath = path.join(publicDir, filename);
 
-  await fs.mkdir(publicDir, { recursive: true });
+  // Buat folder jika tidak ditemukan
+  try {
+    await fs.access(publicDir);
+  } catch (err) {
+    await fs.mkdir(publicDir, { recursive: true });
+  }
+
   await fs.writeFile(filePath, file.buffer);
 
   return {
