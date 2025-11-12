@@ -8,19 +8,12 @@ export class TopicController {
 
   create = async (req, res, next) => {
     try {
-      const modelFile = req?.files?.model?.[0];
-      const markerFile = req?.files?.marker?.[0];
-      const iconFile = req?.files?.icon?.[0];
-
-      if (!modelFile || !markerFile || !iconFile) {
-        return ResponseUtil.error(res, 400, "Model, marker, and icon file is required");
+      const icon = req.file;
+      if (!icon) {
+        return ResponseUtil.error(res, 400, "Icon file is required");
       }
       const { subSlug } = req.params;
-      const topic = await this.topicService.createTopic(subSlug, req.body, {
-        model: modelFile,
-        marker: markerFile,
-        icon: iconFile,
-      });
+      const topic = await this.topicService.createTopic(subSlug, req.body, icon);
       return ResponseUtil.success(res, 201, "Topic created successfully", topic);
     } catch (error) {
       next(error);

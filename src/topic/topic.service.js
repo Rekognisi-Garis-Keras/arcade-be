@@ -3,6 +3,7 @@ import { TopicResponseDTO } from "./dto/topic-response.dto.js";
 import { NotFoundError, ValidationError } from "../utils/error.util.js";
 import { topicCreateSchema, topicUpdateSchema } from "./dto/topic-request.dto.js";
 import { deleteFromPublic, processFile, uploadToPublic } from "../utils/upload.util.js";
+import { handleUpload } from "../config/cloudinary.js";
 
 export class TopicService {
   constructor(topicRepo, subjectService) {
@@ -10,7 +11,7 @@ export class TopicService {
     this.subjectService = subjectService;
   }
 
-  async createTopic(subSlug, data, files) {
+  async createTopic(subSlug, data, icon) {
     const { error, value } = topicCreateSchema.validate(data);
     if (error) {
       throw new ValidationError(error.details[0].message, error.details);
@@ -31,34 +32,20 @@ export class TopicService {
       throw new ValidationError("Topic already exists");
     }
 
-    // handle file uploads
-    let model_url = null;
-    let marker_img_url = null;
-    let icon_url = null;
-
-    if (files && files.model) {
-      const uploadModel = await uploadToPublic(files.model, "topic/models");
-      model_url = uploadModel.url;
-    }
-    if (files && files.marker) {
-      const uploadMarker = await uploadToPublic(files.marker, "topic/markers");
-      marker_img_url = uploadMarker.url;
-    }
-    if (files && files.icon) {
-      const uploadIcon = await uploadToPublic(files.icon, "topic/icons");
-      icon_url = uploadIcon.url;
-    }
+    // handle upload icon
+    const base64 = Buffer.from(icon.buffer).toString("base64");
+    const dataURI = `data:${icon.mimetype};base64,${base64}`;
+    const uploadIcon = await handleUpload(dataURI, "icon");
+    const icon_url = uploadIcon.secure_url;
 
     // create
     const newTopic = { 
-      ...data, 
-      slug,
-      model_url,
-      marker_img_url,
+      ...data,
       icon_url,
+      slug,
       subject: { connect: { id: subject.id } }
     };
-    console.log(newTopic);
+    
     const topic = await this.topicRepo.create(newTopic);
     return new TopicResponseDTO(topic);
   }

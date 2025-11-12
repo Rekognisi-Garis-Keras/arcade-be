@@ -5,6 +5,8 @@ export const topicCreateSchema = Joi.object({
   desc: Joi.string().required(),
   scale_model: Joi.string().required(),
   content: Joi.string().required(),
+  model_url: Joi.string().uri().required(),
+  marker_img_url: Joi.string().uri().required(),
 });
 
 export const topicUpdateSchema = Joi.object({
@@ -13,4 +15,6 @@ export const topicUpdateSchema = Joi.object({
   scale_model: Joi.string(),
   content: Joi.string(),
   finished: Joi.boolean(),
+  model_url: Joi.string().uri().required(),
+  marker_img_url: Joi.string().uri().required(),
 });

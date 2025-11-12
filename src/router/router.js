@@ -61,11 +61,7 @@ export const createRouter = (upload) => {
     .route("/subjects/:subSlug/topics")
     .post(
       authMiddleware,
-      upload.fields([
-        { name: "model", maxCount: 1 },
-        { name: "marker", maxCount: 1 },
-        { name: "icon", maxCount: 1 },
-      ]),
+      upload.single("icon"),
       topicController.create
     )
     .get(authMiddleware, topicController.getBySubjectSlug);
@@ -75,11 +71,7 @@ export const createRouter = (upload) => {
     .get(authMiddleware, topicController.getByTopicSlug)
     .put(
       authMiddleware, 
-      upload.fields([
-        { name: "model", maxCount: 1 },
-        { name: "marker", maxCount: 1 },
-        { name: "icon", maxCount: 1 },
-      ]),
+      upload.single("icon"),
       topicController.update)
     .delete(authMiddleware, topicController.delete);
 
