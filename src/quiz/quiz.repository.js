@@ -8,7 +8,11 @@ export class QuizRepository {
   async findAll() {
     return await prisma.quiz.findMany({
       include: {
-        topic: true
+        topic: {
+          include: {
+            subject: true
+          }
+        }
       }
     });
   }
