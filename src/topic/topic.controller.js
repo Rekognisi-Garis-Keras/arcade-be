@@ -8,10 +8,10 @@ export class TopicController {
 
   create = async (req, res, next) => {
     try {
-      const icon = req.file;
-      if (!icon) {
-        return ResponseUtil.error(res, 400, "Icon file is required");
-      }
+      // const icon = req.file;
+      // if (!icon) {
+      //   return ResponseUtil.error(res, 400, "Icon file is required");
+      // }
       const { subSlug } = req.params;
       const topic = await this.topicService.createTopic(subSlug, req.body, icon);
       return ResponseUtil.success(res, 201, "Topic created successfully", topic);
