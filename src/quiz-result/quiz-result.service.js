@@ -2,11 +2,18 @@ import { QuizResultResponseDTO } from "./dto/quiz-result-response.dto.js";
 import { v7 as uuid } from "uuid";
 
 export class QuizResultService {
-  constructor(quizResultRepo, quizAnswerService, topicService, uXpService) {
+  constructor(
+    quizResultRepo, 
+    quizAnswerService, 
+    topicService, 
+    uXpService,
+    tFinishedService,
+  ) {
     this.quizResultRepo = quizResultRepo;
     this.quizAnswerService = quizAnswerService;
     this.topicService = topicService;
     this.uXpService = uXpService;
+    this.tFinishedService = tFinishedService;
   }
 
   async createResult(data) {
@@ -52,10 +59,14 @@ export class QuizResultService {
     };
 
     // exec
-    const newResult = await this.quizResultRepo.create(quizResultData);
-    const newAnswers = await this.quizAnswerService.createAnswers(newResult.id, resultDetails);
-    const updateXp = await this.uXpService.createOrUpdate(data.user_id, xp);
-    const updateTopic = await this.topicService.updateTopic(topic.slug, { finished: true });
+    const [newResult, ,] = await Promise.all([
+      this.quizResultRepo.create(quizResultData),
+      this.uXpService.createOrUpdate(data.user_id, xp),
+      this.topicService.updateTopic(topic.slug),
+    ]);
+  
+    await this.quizAnswerService.createAnswers(newResult.id, resultDetails);
+    await this.tFinishedService.finish(data.user_id, topic.id);  
 
     const details = quizzes.map((quiz, idx) => {
       return {

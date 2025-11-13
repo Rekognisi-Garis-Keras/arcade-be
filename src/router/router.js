@@ -1,13 +1,14 @@
 import express from "express";
+import passport from "passport";
 import { subjectController } from "../subject/index.js";
 import { topicController } from "../topic/index.js";
 import { quizController } from "../quiz/index.js";
 import { userController } from "../user/index.js";
 import { aiController } from "../ai/index.js";
-import passport from "passport";
 import { authMiddleware } from "../middleware/auth.js";
 import { quizResultController } from "../quiz-result/index.js";
 import { uXpController } from "../user-xp/index.js";
+import { tFinishedController } from "../topic-finished/index.js";
 
 export const createRouter = (upload) => {
   const router = express.Router();
@@ -74,6 +75,13 @@ export const createRouter = (upload) => {
       upload.single("icon"),
       topicController.update)
     .delete(authMiddleware, topicController.delete);
+  
+  // =========================
+  // TOPIC FINISHED ROUTES
+  // =========================
+  router
+    .route("/topic-finished")
+    .get(authMiddleware, tFinishedController.getByUser);
 
   // =========================
   // QUIZ ROUTES

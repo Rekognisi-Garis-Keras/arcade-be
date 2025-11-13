@@ -32,7 +32,8 @@ export class TopicController {
   getByTopicSlug = async (req, res, next) => {
     try {
       const { topSlug } = req.params;
-      const topic = await this.topicService.getTopicByTopicSlug(topSlug);
+      const user = req.user;
+      const topic = await this.topicService.getTopicByTopicSlug(topSlug, user.id);
       return ResponseUtil.success(res, 200, "Topic retrieved successfully", topic);
     } catch (error) {
       next(error);

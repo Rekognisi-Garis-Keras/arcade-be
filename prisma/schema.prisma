@@ -23,6 +23,7 @@ model User {
 
   quiz_results  QuizResult[]
   user_xp       UserXp?
+  topic_finished TopicFinished[]
 
   @@map("users")
 }
@@ -68,15 +69,30 @@ model Topic {
   marker_img_url  String
   scale_model     String
   icon_url        String?
-  finished        Boolean @default(false)
   content         String? @db.Text 
   created_at      DateTime @default(now())
 
   subject         Subject @relation(references: [id], fields: [subject_id], onDelete: Cascade)
   quizzes         Quiz[]
   quiz_results    QuizResult[]
+  topic_finisheds TopicFinished[]
 
   @@map("topics")
+}
+
+// === Topic Finished Model
+model TopicFinished {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  topic_id  Int
+  finished  Boolean  @default(false)
+  finished_at DateTime? 
+
+  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  topic     Topic    @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, topic_id])
+  @@map("topic_finisheds")
 }
 
 // === Quiz Model

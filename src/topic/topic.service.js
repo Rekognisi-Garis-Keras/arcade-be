@@ -6,9 +6,10 @@ import { deleteFromPublic, processFile, uploadToPublic } from "../utils/upload.u
 import { handleUpload } from "../config/cloudinary.js";
 
 export class TopicService {
-  constructor(topicRepo, subjectService) {
+  constructor(topicRepo, subjectService, tFinishedService) {
     this.topicRepo = topicRepo;
     this.subjectService = subjectService;
+    this.tFinishedService = tFinishedService;
   }
 
   async createTopic(subSlug, data, icon) {
@@ -55,11 +56,25 @@ export class TopicService {
     return topics.map(topic => new TopicResponseDTO(topic));
   }
 
-  async getTopicByTopicSlug(slug) {
+  async getTopicByTopicSlug(slug, userId = null) {
     const topic = await this.topicRepo.findByTopicSlug(slug);
     if (!topic) {
       throw new NotFoundError("Topic not found");
     }
+
+    // buat TopicFinished jika belum ada
+    if (userId) {
+      const existingFinished = await this.tFinishedService.findByUserAndTopic(userId, topic.id);
+      if (!existingFinished) {
+        await this.tFinishedService.create({
+          user_id: userId,
+          topic_id: topic.id,
+          finished: false,
+          finished_at: null,
+        });
+      }
+    }
+
     return new TopicResponseDTO(topic);
   }
 
@@ -82,7 +97,7 @@ export class TopicService {
     let updatedData = { ...value };
 
     // slug
-    if (value.title) {
+    if (data && value.title) {
       const newSlug = generateSlug(value.title);
       const duplicate = await this.topicRepo.findByTopicSlug(newSlug);
       if (duplicate && duplicate.slug !== slug)
