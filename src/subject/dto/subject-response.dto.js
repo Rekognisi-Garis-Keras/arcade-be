@@ -11,7 +11,6 @@ export class SubjectResponseDto {
         id: topic.id,
         title: topic.title,
         desc: topic.desc,
-        finished: topic.finished,
       }));
     }
   }
