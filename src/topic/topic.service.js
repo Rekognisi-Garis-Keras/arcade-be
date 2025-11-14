@@ -105,17 +105,6 @@ export class TopicService {
       updatedData.slug = newSlug;
     }
 
-    // handle file
-    updatedData.model_url = await processFile(
-      existing.model_url,
-      files?.model,
-      "topic/models"
-    );
-    updatedData.marker_img_url = await processFile(
-      existing.marker_img_url,
-      files?.marker,
-      "topic/markers"
-    );
     updatedData.icon_url = await processFile(
       existing.icon_url,
       files?.icon,
