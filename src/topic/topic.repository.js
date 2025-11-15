@@ -19,7 +19,13 @@ export class TopicRepository {
   async findBySubjectSlug(slug) {
     const subject = await prisma.subject.findFirst({ 
       where: { slug },
-      include: { topics: true },
+      include: { 
+        topics: {
+          include: {
+            quizzes: true
+          }
+        }
+      },
     });
     return subject ? subject.topics : null;
   }

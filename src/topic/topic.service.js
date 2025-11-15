@@ -2,7 +2,7 @@ import { generateSlug } from "../utils/slug.util.js";
 import { TopicResponseDTO } from "./dto/topic-response.dto.js";
 import { NotFoundError, ValidationError } from "../utils/error.util.js";
 import { topicCreateSchema, topicUpdateSchema } from "./dto/topic-request.dto.js";
-import { deleteFromPublic, processFile, uploadToPublic } from "../utils/upload.util.js";
+import { deleteFromPublic, processFile } from "../utils/upload.util.js";
 import { handleUpload } from "../config/cloudinary.js";
 
 export class TopicService {
