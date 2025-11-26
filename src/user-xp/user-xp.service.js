@@ -19,9 +19,7 @@ export class UserXpService {
     const result = { 
       "top_leaderboard": topLeaderboard,
     };
-    if (!isInLeaderboard) {
-      result["my_position"] = new UserXpResponse(userXp, userRank);
-    }
+    result["my_position"] = new UserXpResponse(userXp, userRank);
     return result;
   }
 

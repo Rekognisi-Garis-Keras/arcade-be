@@ -27,4 +27,15 @@ export class QuizResultController {
       ResponseUtil.error(res, 500, "failed to create quiz result");
     }
   }
+
+  getResult = async (req, res) => {
+    try {
+      const user = req.user;
+      const results = await this.qResultService.getUserResults(user);
+      ResponseUtil.success(res, 200, "user quiz results fetched successfully", results);
+    } catch (error) {
+      console.error(error);
+      ResponseUtil.error(res, 500, "failed to get user's quiz result")
+    }
+  }
 }

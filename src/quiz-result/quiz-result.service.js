@@ -81,4 +81,8 @@ export class QuizResultService {
       details,
     };
   }
+
+  async getUserResults(user) {
+    return await this.quizResultRepo.findByUser(user.id);
+  }
 }
