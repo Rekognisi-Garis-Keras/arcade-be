@@ -89,6 +89,9 @@ export const createRouter = (upload) => {
   router
     .route("/quizzes")
     .get(authMiddleware, quizController.getAll);
+  
+  router
+    .get("/quiz-results", authMiddleware, quizResultController.getResult)
 
   router
     .post("/subjects/:subSlug/topics/:topSlug/quizzes/submit", authMiddleware, quizResultController.submit);
