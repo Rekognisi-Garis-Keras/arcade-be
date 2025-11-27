@@ -108,6 +108,7 @@ export const createRouter = (upload) => {
   // AI
   // ====
   router.post('/subjects/:subSlug/topics/:topSlug/ai', authMiddleware, aiController.askAI);
+  router.get('/subjects/:subSlug/fact', aiController.factAI)
 
   // ================
   // Leaderboard & XP
