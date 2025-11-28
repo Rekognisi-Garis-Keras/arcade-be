@@ -1,4 +1,4 @@
-const quizzesPerTopic = {
+const quizzesData = {
   // BIOLOGI
   "Ginjal": [
     {
@@ -1596,4 +1596,4 @@ const quizzesPerTopic = {
   ]
 };
 
-export default quizzesPerTopic;
+export default quizzesData;
