@@ -14,7 +14,13 @@ export class UserXpService {
 
     // get user rank
     const userRank = await this.uXpRepo.getUserRank(userId);
-    const topLeaderboard = uXps.map((uXp, index) => new UserXpResponse(uXp, (filter.offset || 0) + index + 1));
+    // const topLeaderboard = uXps.map((uXp, index) => new UserXpResponse(uXp, (filter.offset || 0) + index + 1));
+    const topLeaderboard = await Promise.all(
+      uXps.map(async (uXp) => {
+        const rank = await this.uXpRepo.getUserRank(uXp.user_id);
+        return new UserXpResponse(uXp, rank);
+      })
+    );    
     const isInLeaderboard = topLeaderboard.some(item => item.user_id === userId);
     const result = { 
       "top_leaderboard": topLeaderboard,

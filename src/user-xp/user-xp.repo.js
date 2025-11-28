@@ -43,19 +43,15 @@ export class UserXpRepository {
   }
 
   async getUserRank(userId) {
-    const userXp = await this.findByUserId(userId);
-    if (!userXp) {
-      return null;
-    }
-
-    const rank = await prisma.userXp.count({
-      where: {
-        xp: {
-          gt: userXp.xp
-        }
-      }
+    const allUsers = await prisma.userXp.findMany({
+      orderBy: [
+        { xp: "desc" },
+        { user_id: "asc" }
+      ]
     });
-
-    return rank + 1;
+  
+    const index = allUsers.findIndex(u => u.user_id === userId);
+  
+    return index >= 0 ? index + 1 : null;
   }
 }

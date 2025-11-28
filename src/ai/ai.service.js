@@ -26,4 +26,29 @@ export class AIService {
 
       return answer;
    }
+
+   async funFact(subject) {
+      const prompt = `
+                        Kamu adalah asisten pembelajaran untuk platform edukasi Augmented Reality bernama Arcade. 
+                        Tugasmu adalah memberikan 1 fun fact atau "Tahukah Kamu?" yang menarik dan mudah dipahami anak-anak 
+                        berdasarkan mata pelajaran "${subject}".
+
+                        Ketentuan jawaban:
+                        - Jawaban harus relevan dengan mata pelajaran "${subject}".
+                        - Sekitar 30-35 kata.
+                        - Gunakan gaya bahasa ringan, positif, dan membuat anak penasaran.
+                        - Tambahkan emoji yang relevan dengan "${subject}" agar menarik
+                        - Jangan memasukkan fakta yang tidak terbukti.
+                        - Jika mata pelajaran tidak jelas atau tidak ditemukan, beri jawaban singkat:
+                        "Maaf, saya hanya dapat memberikan fun fact sesuai mata pelajaran ${subject}."
+
+                        Berikan jawaban dalam format:
+                        "Tahukah kamu? <isi fun fact>"
+                     `
+
+      const result = await this.model.generateContent(prompt)
+      const answer = result.response.text()
+
+      return answer
+   }
 }

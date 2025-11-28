@@ -22,4 +22,21 @@ export class AIController {
          return ResponseUtil.error(res, 500, "Gagal memproses AI.", error.message);
       }
    };
+
+   factAI = async (req, res) => {
+      try {
+         const { subSlug } = req.params;
+
+         if (!subSlug) {
+            return ResponseUtil.validationError(res, "Anda harus memilih Subject terlebih dahulu.");
+         }
+
+         const answer = await this.aiService.funFact(subSlug);
+
+         return ResponseUtil.success(res, 200, "Berhasil menampilkan Fakta.", { answer });
+      } catch (error) {
+         console.error(error);
+         return ResponseUtil.error(res, 500, "Gagal memproses AI.", error.message);
+      }
+   }
 }
