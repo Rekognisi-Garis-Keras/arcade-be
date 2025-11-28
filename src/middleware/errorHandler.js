@@ -8,6 +8,7 @@ import { ResponseUtil } from "../utils/response.util.js";
 
 export function errorHandler(err, req, res, next) {
   console.error(`[${err.name}]`, err.message);
+  console.error(err);
 
   if (err instanceof ValidationError) {
     return ResponseUtil.validationError(res, err.message, err.details);

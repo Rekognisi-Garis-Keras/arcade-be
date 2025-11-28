@@ -105,11 +105,16 @@ export class TopicService {
       updatedData.slug = newSlug;
     }
 
-    updatedData.icon_url = await processFile(
-      existing.icon_url,
-      files?.icon,
-      "topic/icons"
-    );
+    // handle upload icon (using handleUpload and dataURI if files.icon exists)
+    if (files && files.icon) {
+      // files.icon expected to be a file object with buffer and mimetype
+      const base64 = Buffer.from(files.icon.buffer).toString("base64");
+      const dataURI = `data:${files.icon.mimetype};base64,${base64}`;
+      const uploadIcon = await handleUpload(dataURI, "icon");
+      updatedData.icon_url = uploadIcon.secure_url;
+    } else {
+      updatedData.icon_url = existing.icon_url;
+    }
     
     const topic = await this.topicRepo.update(slug, updatedData);
     return new TopicResponseDTO(topic);
