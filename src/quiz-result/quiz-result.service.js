@@ -85,4 +85,8 @@ export class QuizResultService {
   async getUserResults(user) {
     return await this.quizResultRepo.findByUser(user.id);
   }
+
+  async getResultDetail(uuid) {
+    return await this.quizResultRepo.findByUUID(uuid);
+  }
 }

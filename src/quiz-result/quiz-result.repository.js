@@ -21,4 +21,19 @@ export class QuizResultRepository {
       }
     });
   }
+
+  async findByUUID(uuid) {
+    return await prisma.quizResult.findUnique({
+      where: { uuid },
+      include: {
+        topic: {
+          include: {
+            subject: true,
+            quizzes: true
+          }
+        },
+        quiz_answers: true
+      }
+    });
+  }
 }

@@ -38,4 +38,20 @@ export class QuizResultController {
       ResponseUtil.error(res, 500, "failed to get user's quiz result")
     }
   }
+
+  getResultDetail = async (req, res) => {
+    try {
+      const { uuid } = req.params;
+      const result = await this.qResultService.getResultDetail(uuid);
+      
+      if (!result) {
+        return ResponseUtil.notFound(res, "Quiz result not found");
+      }
+
+      ResponseUtil.success(res, 200, "quiz result detail fetched successfully", result);
+    } catch (error) {
+      console.error(error);
+      ResponseUtil.error(res, 500, "failed to get quiz result detail");
+    }
+  }
 }
