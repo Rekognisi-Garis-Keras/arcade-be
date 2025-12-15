@@ -53,13 +53,11 @@ export class TopicController {
   update = async (req, res, next) => {
     try {
       const { topSlug } = req.params;
-      const modelFile = req?.files?.model?.[0];
-      const markerFile = req?.files?.marker?.[0];
-      const iconFile = req?.files?.icon?.[0];
+      const iconFile = req.file;
       const updatedTopic = await this.topicService.updateTopic(
         topSlug,
         req.body,
-        { model: modelFile, marker: markerFile, icon: iconFile }
+        { icon: iconFile }
       );
       return ResponseUtil.success(res, 200, "Topic updated successfully", updatedTopic);
     } catch (error) {
